@@ -2,20 +2,21 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool isPalindrome(char *str) {
+int main() {
+    char str[100];
+
+    scanf("%s", str);
+
     int i = 0;
     int j = strlen(str) - 1;
     while (i < j) {
-        if (str[i] != str[j])
-            return false;
+        if (str[i] != str[j]) {
+            printf("False \n");
+            return 0;
+        }
         i++;
         j--;
     }
-    return true;
-}
-
-
-int main() {
-    printf("%s \n", isPalindrome("abcba") ? "true" : "false");
+    printf("True \n");
     return 0;
 }

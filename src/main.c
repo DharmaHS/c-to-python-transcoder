@@ -142,7 +142,6 @@ void parse(char* str) {
 
 // DRIVER FUNCTION
 int main() {
-    // read c source code file into a string
 	FILE *fp;
 	fp = fopen("test.c", "r");
 
