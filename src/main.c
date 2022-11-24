@@ -139,14 +139,19 @@ void parse(char* str) {
 	return;
 }
 
+
 // DRIVER FUNCTION
 int main() {
-    // read c source code from file
-    // char *sourceCode = readFile("test.c");
-    
-    char sourceCode[100] = "int a = b + 1c; ";
-    // parse the source code
-	parse(sourceCode);
+    // read c source code file into a string
+	FILE *fp;
+	fp = fopen("test.c", "r");
+
+	char source[1000];
+
+	while(!feof(fp)) {
+		fgets(source, 1000, fp);
+		parse(source);
+	}
 
 	return (0);
 }
