@@ -12,12 +12,20 @@ bool isDelimiter(char ch) {
 		return (true);
 	return (false);
 }
+// Returns 'true' if the character is a SEPERATOR.
+bool isSeperator(char ch) {
+	if (ch == ';' || ch == ','||
+		ch == '(' || ch == ')' || ch == '[' || ch == ']' ||
+		ch == '{' || ch == '}')
+		return (true);
+	return (false);
+}
 
 // Returns 'true' if the character is an OPERATOR.
 bool isOperator(char ch) {
 	if (ch == '+' || ch == '-' || ch == '*' ||
 		ch == '/' || ch == '>' || ch == '<' ||
-		ch == '=')
+		ch == '=' || ch == '!')
 		return (true);
 	return (false);
 }
@@ -110,6 +118,9 @@ void parse(char* str) {
 		if (isDelimiter(str[right]) == true && left == right) {
 			if (isOperator(str[right]) == true)
 				printf("'%c' IS AN OPERATOR\n", str[right]);
+
+			else if (isSeperator(str[right]) == true)
+				printf("'%c' IS A SEPERATOR\n", str[right]);
 
 			right++;
 			left = right;
