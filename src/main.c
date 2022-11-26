@@ -40,7 +40,7 @@ bool isKeyword(char* str) {
 		!strcmp(str, "continue") || !strcmp(str, "int")
 		|| !strcmp(str, "double") || !strcmp(str, "float")
 		|| !strcmp(str, "return") || !strcmp(str, "char")
-		|| !strcmp(str, "case") || !strcmp(str, "str")
+		|| !strcmp(str, "case")
 		|| !strcmp(str, "sizeof") || !strcmp(str, "long")
 		|| !strcmp(str, "short") || !strcmp(str, "typedef")
 		|| !strcmp(str, "switch") || !strcmp(str, "unsigned")
