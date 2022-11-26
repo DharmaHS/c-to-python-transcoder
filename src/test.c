@@ -4,7 +4,6 @@
 
 int main() {
     char str[100];
-
     scanf("%s", str);
 
     int i = 0;
