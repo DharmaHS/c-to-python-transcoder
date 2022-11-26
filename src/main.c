@@ -36,7 +36,7 @@ bool validIdentifier(char* str) {
 bool isKeyword(char* str) {
 	if (!strcmp(str, "if") || !strcmp(str, "else") ||
 		!strcmp(str, "while") || !strcmp(str, "do") ||
-		!strcmp(str, "break") ||
+		!strcmp(str, "break") || !strcmp(str, "for") ||
 		!strcmp(str, "continue") || !strcmp(str, "int")
 		|| !strcmp(str, "double") || !strcmp(str, "float")
 		|| !strcmp(str, "return") || !strcmp(str, "char")
