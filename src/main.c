@@ -8,7 +8,7 @@ bool isDelimiter(char ch) {
 	if (ch == ' ' || ch == '+' || ch == '-' || ch == '*' ||
 		ch == '/' || ch == ',' || ch == ';' || ch == '>' ||
 		ch == '<' || ch == '=' || ch == '(' || ch == ')' ||
-		ch == '[' || ch == ']' || ch == '{' || ch == '}')
+		ch == '[' || ch == ']' || ch == '{' || ch == '}' || ch == '\n')
 		return (true);
 	return (false);
 }
