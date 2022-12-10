@@ -3,6 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+struct Token {
+	char* value;
+	char* type;
+}tokens[1000];
+
 // Returns 'true' if the character is a DELIMITER.
 bool isDelimiter(char ch) {
 	if (ch == ' ' || ch == '+' || ch == '-' || ch == '*' ||
@@ -48,7 +53,7 @@ bool isKeyword(char* str) {
 		!strcmp(str, "continue") || !strcmp(str, "int")
 		|| !strcmp(str, "double") || !strcmp(str, "float")
 		|| !strcmp(str, "return") || !strcmp(str, "char")
-		|| !strcmp(str, "case")
+		|| !strcmp(str, "case") || !strcmp(str, "#include")
 		|| !strcmp(str, "sizeof") || !strcmp(str, "long")
 		|| !strcmp(str, "short") || !strcmp(str, "typedef")
 		|| !strcmp(str, "switch") || !strcmp(str, "unsigned")
@@ -110,17 +115,24 @@ char* subString(char* str, int left, int right) {
 void parse(char* str) {
 	int left = 0, right = 0;
 	int len = strlen(str);
+	int i = 0;
 
 	while (right <= len && left <= right) {
 		if (isDelimiter(str[right]) == false)
 			right++;
 
 		if (isDelimiter(str[right]) == true && left == right) {
-			if (isOperator(str[right]) == true)
-				printf("'%c' IS AN OPERATOR\n", str[right]);
+			if (isOperator(str[right]) == true){
+				// printf("'%c' IS AN OPERATOR\n", str[right]);
+				tokens[i].type = "operator";
+				tokens[i].value = str[right];
+				}
 
-			else if (isSeperator(str[right]) == true)
-				printf("'%c' IS A SEPERATOR\n", str[right]);
+			else if (isSeperator(str[right]) == true){
+				// printf("'%c' IS A SEPERATOR\n", str[right]);
+				tokens[i].type = "seperator";
+				tokens[i].value = str[right];
+				}
 
 			right++;
 			left = right;
@@ -129,25 +141,124 @@ void parse(char* str) {
 			char* subStr = subString(str, left, right - 1);
 
 			if (isKeyword(subStr) == true)
-				printf("'%s' IS A KEYWORD\n", subStr);
+			{
+				// printf("'%s' IS A KEYWORD\n", subStr);
+				tokens[i].type = "keyword";
+				tokens[i].value = str[right];
+			}
 
-			else if (isInteger(subStr) == true)
-				printf("'%s' IS AN INTEGER\n", subStr);
+			else if (isInteger(subStr) == true){
+				// printf("'%s' IS AN INTEGER\n", subStr);
+				tokens[i].type = "integer";
+				tokens[i].value = str[right];
+			}
 
-			else if (isRealNumber(subStr) == true)
-				printf("'%s' IS A REAL NUMBER\n", subStr);
+			else if (isRealNumber(subStr) == true){
+				// printf("'%s' IS A REAL NUMBER\n", subStr);
+				tokens[i].type = "real number";
+				tokens[i].value = str[right];
+			}
 
 			else if (validIdentifier(subStr) == true
-					&& isDelimiter(str[right - 1]) == false)
-				printf("'%s' IS A VALID IDENTIFIER\n", subStr);
+					&& isDelimiter(str[right - 1]) == false){
+				// printf("'%s' IS A VALID IDENTIFIER\n", subStr);
+				tokens[i].type = "valid id";
+				tokens[i].value = str[right];
+			}
 
 			else if (validIdentifier(subStr) == false
-					&& isDelimiter(str[right - 1]) == false)
-				printf("'%s' IS NOT A VALID IDENTIFIER\n", subStr);
+					&& isDelimiter(str[right - 1]) == false){
+				// printf("'%s' IS NOT A VALID IDENTIFIER\n", subStr);
+				tokens[i].type = "invalid identifier";
+				tokens[i].value = str[right];
+			}
+			
 			left = right;
 		}
+		i++;
 	}
 	return;
+}
+
+void printToken(struct Token t){
+	printf("'%s' : '%s',", t.type, t.value);
+};
+
+// print AST recursively
+void printAstRec(int i){
+
+	// case end
+	if(tokens[i].value == "}" && tokens[i+2].value == NULL) {
+		printf("}\n");
+		return;
+		}
+	if(tokens[i].type == "keyword"){
+		// case include
+		if(tokens[i].value == "#include"){
+			printf("{include\n	{'keyword' : 'include'}\n");
+			i++;
+			printAstRec(i); // <
+			i++;
+			printAstRec(i); // stdio.h
+			i++;
+			printAstRec(i); // >
+			i++;
+			printAstRec(i); //
+		}
+		//TODO case main
+		if(tokens.){
+
+		}
+		//TODO case assignment
+
+		//TODO case while
+	}
+	else if(tokens[i].type == "operator"){
+		printf("{operator - '%s'}", tokens[i].value);
+		return;
+	}
+	else if(tokens[i].type == "seperator"){
+		printf("{seperator - '%s'}", tokens[i].value);
+		return;
+	}
+	else if(tokens[i].type == "integer"){
+		printf("{integer - '%s'}", tokens[i].value);
+		return;
+	}
+	else if(tokens[i].type == "real number"){
+		printf("{real number - '%s'}", tokens[i].value);
+		return;
+	}
+	else if(tokens[i].type == "valid identifier"){
+		// case scanf
+		if(tokens[i].value == "scanf"){ //TODO still have issues
+			printf("{function: \n	{'valid identifier' : 'scanf'}\n");
+			i++;
+			printAstRec(i); // (
+			i++;
+			printAstRec(i); // "
+			i++;
+			printAstRec(i); // %d
+			i++;
+			printAstRec(i); // "
+			i++;
+			printAstRec(i); // ,
+			i++;
+			printAstRec(i); // &
+			i++;
+			printAstRec(i); // a
+			i++;
+			printAstRec(i); // )
+			i++;
+			printAstRec(i); // ;
+		}
+		printf("{identifier - '%s'}", tokens[i].value);
+		return;
+	}
+	else if(tokens[i].type == "invalid identifier"){
+		printf("{invalid identifier - '%s'}", tokens[i].value);
+		return;
+	}
 }
 
 
@@ -162,6 +273,7 @@ int main() {
 		fgets(source, 1000, fp);
 		parse(source);
 	}
+	printAST();
 
 	return (0);
 }
