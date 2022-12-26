@@ -378,6 +378,19 @@ void printASTRec(int i)
 	}
 }
 
+// print pycode recursively
+void printPyRec(int i, int indent){
+	
+	if (tokens[i].type == "keyword"){
+		// case include, for this case just pass through the tokens
+		if(tokens[i].value == "include"){
+			i+=4;
+			printPyRec(i, indent);
+			return;
+		}
+	}
+}
+
 // DRIVER FUNCTION
 int main()
 {
@@ -403,7 +416,8 @@ int main()
 	// 	printToken(tokens[i]);
 	// }
 	
-	int temp = 0;
-	printASTRec(temp);
+	// int temp = 0;
+	// printASTRec(temp);
+	printPyRec(0, 0);
 	return (0);
 }
