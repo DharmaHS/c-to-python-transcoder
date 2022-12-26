@@ -402,9 +402,9 @@ void printPyRec(int i, int indent){
 		// case main
 		if(tokens[i].value == "int" && tokens[i+1].value == "main")
 		{
-			std::cout<<"if __name__ == \"__main__\": \n";
-			i+=5;
-			printPyRec(i, indent+1);
+			std::cout<<"if __name__ == \"__main__\"";
+			i+=4;
+			printPyRec(i, indent);
 			return;
 		}
 
@@ -419,15 +419,15 @@ void printPyRec(int i, int indent){
 		// case assignment
 		if(tokens[i].value == "int" || tokens[i].value == "double" || tokens[i].value == "short" || tokens[i].value == "long")
 		{
-			printIndent(indent);
 			i++;
 			std::cout<<tokens[i].value;
 			// direct assignment
 			if(tokens[i+1].value == ";")
 			{
 				std::cout<<" = 0";
-				i+=2;
+				i++;
 				printPyRec(i, indent);
+				return;
 			}
 			// array assignment
 			if(tokens[i+1].value == "[")
@@ -458,7 +458,7 @@ void printPyRec(int i, int indent){
 			if(tokens[i+1].value == ";")
 			{
 				std::cout<<" = '0'";
-				i+=2;
+				i++;
 				printPyRec(i, indent);
 				return;
 			}
@@ -491,7 +491,7 @@ void printPyRec(int i, int indent){
 			if(tokens[i+1].value == ";")
 			{
 				std::cout<<" = 0.0";
-				i+=2;
+				i++;
 				printPyRec(i, indent);
 				return;
 			}
@@ -533,11 +533,13 @@ void printPyRec(int i, int indent){
 			printPyRec(i, indent);
 			return;
 		}
+
 		// case for, this for case only considers possibility of "i <" as condition
 		if(tokens[i].value == "for")
 		{	
-			std::cout<<tokens[i+4].value; // for(int i = 0; i < n - 1; i++)
-			std::cout<<"for "<<tokens[i+4].value << " in range(" << tokens[i+6].value << ", ";
+			std::cout<<tokens[i+3].value<<tokens[i+4].value<<tokens[i+5].value<<"\n"; // for(int i = 0; i < n - 1; i++)
+			printIndent(indent);
+			std::cout<<"for "<<tokens[i+3].value << " in range(" << tokens[i+5].value << ", ";
 			while (tokens[i].value != ";")
 			{	
 				i++;
@@ -556,9 +558,9 @@ void printPyRec(int i, int indent){
 				i++;
 			}
 			i++;
-			std::cout<<"):";
+			std::cout<<")";
 			// i++, probably could have more checks but currently only considering i++ as increment
-			while(tokens[i].value!="<")
+			while(tokens[i].value!=")")
 			{
 				i++;
 			}
