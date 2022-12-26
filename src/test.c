@@ -11,11 +11,12 @@ int main() {
     while (i < j) {
         if (str[i] != str[j]) {
             printf("False\n");
-            return 0;
+            break;
         }
-        i++;
-        j--;
+        else {
+            printf("True\n");
+        }
+        i+=1;
+        j-=1;
     }
-    printf("True\n");
-    return 0;
 }

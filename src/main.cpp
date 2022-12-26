@@ -432,7 +432,7 @@ void printPyRec(int i, int indent){
 			// array assignment
 			if(tokens[i+1].value == "[")
 			{
-				std::cout<<" = []";
+				std::cout<<" = [0]";
 				i+=2;
 				std::cout<<"*"<<tokens[i].value;
 				i+=2;
@@ -498,7 +498,7 @@ void printPyRec(int i, int indent){
 			// array assignment
 			else if(tokens[i+1].value == "[")
 			{
-				std::cout<<" = []";
+				std::cout<<" = [0.0]";
 				i+=2;
 				std::cout<<"*"<<tokens[i].value;
 				i+=2;
@@ -525,10 +525,10 @@ void printPyRec(int i, int indent){
 			return;
 		}
 
-		// case if
-		if(tokens[i].value == "if")
+		// case if else break
+		if(tokens[i].value == "if" || tokens[i].value == "else" || tokens[i].value == "break")
 		{
-			std::cout<<"if";
+			std::cout<<tokens[i].value;
 			i++;
 			printPyRec(i, indent);
 			return;
@@ -637,19 +637,43 @@ void printPyRec(int i, int indent){
 	}
 	else if (tokens[i].type == "valid identifier")
 	{
-		// ! case scanf
+		// ! case scanf, only considering with 1 variable for simplicity
 		// scanf("%d", &n); => n = input()
-		if(tokens[i].value == "scanf")
-		{
-			while(tokens[i].value != ")")
+		if(tokens[i].value == "scanf"){
+			if(tokens[i+2].value == "\"%s\"")
 			{
+				while(tokens[i].value != ",")
+				{
+					i++;
+				}
+				i+=2;
+				while(tokens[i].value != ")")
+				{
+					std::cout<<tokens[i-1].value;
+					i++;
+				}
+				std::cout<<tokens[i-1].value<< " = input()";
 				i++;
+				printPyRec(i, indent);
+				return;
 			}
-
-			std::cout<<tokens[i-1].value << " = input()";
-			i++;
-			printPyRec(i, indent);
-			return;
+			if(tokens[i+2].value == "\"%d\"")
+			{
+				while(tokens[i].value != ",")
+				{
+					i++;
+				}
+				i+=2;
+				while(tokens[i].value != ")")
+				{
+					std::cout<<tokens[i-1].value;
+					i++;
+				}
+				std::cout<<tokens[i-1].value<< " = int(input())";
+				i++;
+				printPyRec(i, indent);
+				return;
+			}
 		}
 
 		// ! case printf, only considering the following two cases for simplicity
@@ -662,29 +686,28 @@ void printPyRec(int i, int indent){
 				i++;
 			}
 			i--;
-			// case of printf("something")
-			if(tokens[i].value == "\"")
+			if(tokens[i].type == "valid identifier")
 			{
-				std::cout<<"print(";
-				i--;
-				while(tokens[i].value != "")
-				{
-					i--;
-				}
+				std::cout<<"print(" << tokens[i].value << ")";
 				i++;
-				while(tokens[i].value != "\"")
-				{
-					std::cout<<tokens[i].value;
-					i++;
-				}
-				std::cout<<")";
 				i++;
 				printPyRec(i, indent);
 				return;
 			}
 			else
-			{	// !this is very specific case, only works for this program
-				std::cout<<"print("<<tokens[i].value<<", end = \" \")";
+			{	// !this only works with one variable
+				std::cout<<"print(";
+				while(tokens[i].value != ",")
+				{
+					i--;
+				}
+				i++;
+				while(tokens[i].value != ")")
+				{	
+					std::cout<<tokens[i].value;
+					i++;
+				}
+				std::cout<<", end = \" \")";
 			}
 			i++;
 			printPyRec(i, indent);
