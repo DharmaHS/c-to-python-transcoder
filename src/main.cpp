@@ -387,9 +387,12 @@ void printIndent(int indent){
 // print python code recursively
 void printPyRec(int i, int indent){
 	
+	if (i >= tokenCount)
+		return;
+
 	if (tokens[i].type == "keyword"){
 		// case include, for this case just pass through the tokens
-		if(tokens[i].value == "include")
+		if(tokens[i].value == "#include")
 		{
 			i+=4;
 			printPyRec(i, indent);
@@ -399,14 +402,20 @@ void printPyRec(int i, int indent){
 		// case main
 		if(tokens[i].value == "int" && tokens[i+1].value == "main")
 		{
-			std::cout<<"if __name__=='__main__': \n";
-			i+=2;
-			indent++;
-			printIndent(indent);
+			std::cout<<"if __name__ == \"__main__\": \n";
+			i+=5;
 			printPyRec(i, indent+1);
 			return;
 		}
 
+		// case return
+		if(tokens[i].value == "return")
+		{
+			std::cout<<"return ";
+			i++;
+			printPyRec(i, indent);
+			return;
+		}
 		// case assignment
 		if(tokens[i].value == "int" || tokens[i].value == "double" || tokens[i].value == "short" || tokens[i].value == "long")
 		{
@@ -421,13 +430,14 @@ void printPyRec(int i, int indent){
 				printPyRec(i, indent);
 			}
 			// array assignment
-			else if(tokens[i+1].value == "[")
+			if(tokens[i+1].value == "[")
 			{
 				std::cout<<" = []";
-				i+=3;
+				i+=2;
 				std::cout<<"*"<<tokens[i].value;
 				i+=2;
 				printPyRec(i, indent);
+				return;
 			}
 			if(tokens[i+1].value == "=")
 			{
@@ -450,15 +460,17 @@ void printPyRec(int i, int indent){
 				std::cout<<" = '0'";
 				i+=2;
 				printPyRec(i, indent);
+				return;
 			}
 			// array assignment
-			else if(tokens[i+1].value == "[")
+			if(tokens[i+1].value == "[")
 			{
 				std::cout<<" = []";
-				i+=3;
+				i+=2;
 				std::cout<<"*"<<tokens[i].value;
 				i+=2;
 				printPyRec(i, indent);
+				return;
 			}
 			if(tokens[i+1].value == "=")
 			{
@@ -481,15 +493,17 @@ void printPyRec(int i, int indent){
 				std::cout<<" = 0.0";
 				i+=2;
 				printPyRec(i, indent);
+				return;
 			}
 			// array assignment
 			else if(tokens[i+1].value == "[")
 			{
 				std::cout<<" = []";
-				i+=3;
+				i+=2;
 				std::cout<<"*"<<tokens[i].value;
 				i+=2;
 				printPyRec(i, indent);
+				return;
 			}
 			if(tokens[i+1].value == "=")
 			{
@@ -565,7 +579,6 @@ void printPyRec(int i, int indent){
 		// case end
 		if (tokens[i].value == "}" && i+2 >= tokenCount)
 		{
-			printToken(tokens[i]);
 			std::cout<<"\n";
 			return;
 		}
@@ -582,8 +595,10 @@ void printPyRec(int i, int indent){
 		// case }, end of a block, indent --
 		else if (tokens[i].value == "}")
 		{
+			std::cout<<"\n";
 			indent--;
 			i++;
+			printIndent(indent);
 			printPyRec(i, indent);
 			return;
 		}
@@ -594,12 +609,14 @@ void printPyRec(int i, int indent){
 			std::cout<<"\n";
 			printIndent(indent);
 			printPyRec(i, indent);
+			return;
 		}
 		else 
 		{
 			std::cout<<tokens[i].value;
 			i++;
 			printPyRec(i, indent);
+			return;
 		}
 	}
 	else if (tokens[i].type == "integer")
@@ -618,11 +635,73 @@ void printPyRec(int i, int indent){
 	}
 	else if (tokens[i].type == "valid identifier")
 	{
-		// TODO: case scanf
-		
-		// TODO: case printf
+		// ! case scanf
+		// scanf("%d", &n); => n = input()
+		if(tokens[i].value == "scanf")
+		{
+			while(tokens[i].value != ")")
+			{
+				i++;
+			}
 
-		// TODO: case strlen
+			std::cout<<tokens[i-1].value << " = input()";
+			i++;
+			printPyRec(i, indent);
+			return;
+		}
+
+		// ! case printf, only considering the following two cases for simplicity
+		// printf("%d ", n); => print(n, end = " ")
+		// printf("False\n"); => print("False \n")
+		if(tokens[i].value == "printf")
+		{
+			while(tokens[i].value != ")")
+			{
+				i++;
+			}
+			i--;
+			// case of printf("something")
+			if(tokens[i].value == "\"")
+			{
+				std::cout<<"print(";
+				i--;
+				while(tokens[i].value != "")
+				{
+					i--;
+				}
+				i++;
+				while(tokens[i].value != "\"")
+				{
+					std::cout<<tokens[i].value;
+					i++;
+				}
+				std::cout<<")";
+				i++;
+				printPyRec(i, indent);
+				return;
+			}
+			else
+			{	// !this is very specific case, only works for this program
+				std::cout<<"print("<<tokens[i].value<<", end = \" \")";
+			}
+			i++;
+			printPyRec(i, indent);
+			return;
+		}
+		// ! case strlen
+		// strlen(str)
+		if(tokens[i].value == "strlen")
+		{
+			while(tokens[i].value != ")")
+			{
+				i++;
+			}
+			i--;
+			std::cout<<"len("<<tokens[i].value<<")";
+			i+=2;
+			printPyRec(i, indent);
+			return;
+		}
 
 		// else case
 		std::cout << tokens[i].value;
@@ -630,13 +709,14 @@ void printPyRec(int i, int indent){
 		printPyRec(i, indent);
 		return;
 	}
+	return;
 }
 
 // DRIVER FUNCTION
 int main()
 {
 	FILE *fp;
-	fp = fopen("test.c", "r");
+	fp = fopen("test2.c", "r");
 
 	char source[1000];
 
