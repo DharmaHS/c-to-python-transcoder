@@ -451,7 +451,6 @@ void printPyRec(int i, int indent){
 		}
 		if(tokens[i].value == "char")
 		{
-			printIndent(indent);
 			i++;
 			std::cout<<tokens[i].value;
 			// direct assignment
@@ -741,7 +740,7 @@ void printPyRec(int i, int indent){
 int main()
 {
 	FILE *fp;
-	fp = fopen("test2.c", "r");
+	fp = fopen("test.c", "r");
 
 	char source[1000];
 
