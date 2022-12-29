@@ -2,21 +2,35 @@
 #include <stdbool.h>
 #include <string.h>
 
-int main() {
+int main()
+{
     char str[100];
     scanf("%s", str);
 
     int i = 0;
     int j = strlen(str) - 1;
-    while (i < j) {
-        if (str[i] != str[j]) {
-            printf("False\n");
+    int flag = 0;
+    while (i < j)
+    {
+        if (str[i] != str[j])
+        {
+            flag = 0;
             break;
         }
-        else {
-            printf("True\n");
+        else
+        {
+            flag = 1;
         }
-        i+=1;
-        j-=1;
+        i += 1;
+        j -= 1;
+    }
+
+    if (flag)
+    {
+        printf("True\n");
+    }
+    else
+    {
+        printf("False\n");
     }
 }
